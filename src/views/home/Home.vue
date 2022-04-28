@@ -3,20 +3,28 @@
     <nav-bar class="home-nav">
       <template v-slot:center>购物街</template>
     </nav-bar>
+    <tab-control
+      :titles="['流行', '新款', '精选']"
+      class="tab-control"
+      @tabClick="tabClick"
+      ref="tabControl1"
+      v-show="isTabFixed"
+    />
     <scroll
       class="content"
       ref="scroll"
       :probe-type="3"
-      :pulling-up-load="true"
+      :pull-up-load="true"
+      @pullingUp="loadMore"
       @scroll="contentScroll"
     >
-      <home-swiper :banners="banners" />
+      <home-swiper :banners="banners" @swiperImageLoad="swiperImageLoad" />
       <recommend-view :recommends="recommends" />
       <feature-view></feature-view>
       <tab-control
         :titles="['流行', '新款', '精选']"
-        class="tab-control"
         @tabClick="tabClick"
+        ref="tabControl2"
       />
       <goods-list :goods="goods[currentType].list" />
     </scroll>
@@ -61,7 +69,18 @@ export default {
       },
       currentType: "pop",
       isShowBackTop: false,
+      tabOffsetTop: 0,
+      isTabFixed: false,
+      saveY: 0,
     };
+  },
+  unmounted() {},
+  activated() {
+    this.$refs.scroll.scrollTo(0, this.saveY, 0);
+  },
+  deactivated() {
+    this.saveY = this.$refs.scroll.getScrollY();
+    // console.log(this.sveY);
   },
   created() {
     this.getHomeMultidata();
@@ -71,6 +90,8 @@ export default {
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
   },
+
+  mounted() {},
   methods: {
     /*
      *事件监听相关方法
@@ -86,6 +107,8 @@ export default {
         case 2:
           this.currentType = "sell";
       }
+      this.$refs.tabControl1.currentIndex = index;
+      this.$refs.tabControl2.currentIndex = index;
     },
     backClick() {
       this.$refs.scroll.scrollTo(0, 0);
@@ -93,6 +116,15 @@ export default {
     },
     contentScroll(position) {
       this.isShowBackTop = position.y < -1000;
+      this.isTabFixed = position.y < -this.tabOffsetTop;
+      // console.log(position.y);
+    },
+    loadMore() {
+      this.getHomeGoods(this.currentType);
+    },
+    //获取tabControl的offsetTop
+    swiperImageLoad() {
+      this.tabOffsetTop = this.$refs.tabControl2.$el.offsetTop;
     },
 
     /*
@@ -110,6 +142,9 @@ export default {
       getHomeGoods(type, page).then((res) => {
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
+
+        //finish上拉加载更多
+        this.$refs.scroll.finishPullUp();
       });
     },
   },
@@ -117,23 +152,28 @@ export default {
 </script>
 
 <style scoped>
+#home {
+  height: 100vh;
+  /* position: relative; */
+}
 .home-nav {
   background-color: var(--color-tint);
   color: #fff;
 
-  position: sticky;
+  /* position: sticky;
   top: 0;
-  z-index: 999;
+  z-index: 999; */
 }
 .tab-control {
-  position: sticky;
-  top: 44px;
-  z-index: 999;
+  position: relative;
 }
 li {
   height: 200px;
 }
 .content {
+  overflow: hidden;
+  /* position: fixed; */
+  /* height: calc(100vh - 93px); */
   height: calc(100vh - 93px);
   /* z-index: -1; */
 }

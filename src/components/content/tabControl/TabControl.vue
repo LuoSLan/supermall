@@ -37,7 +37,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .tab-control {
   display: flex;
   background-color: #fff;

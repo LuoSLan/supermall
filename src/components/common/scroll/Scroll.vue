@@ -17,10 +17,10 @@ export default {
       type: Number,
       default: 0,
     },
-    // pullingUpLoad: {
-    //   type: Boolean,
-    //   default: false,
-    // },
+    pullUpLoad: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -33,7 +33,7 @@ export default {
       observeImage: true,
       click: true,
       probeType: this.probeType,
-      pullingUpLoad: this.pullingUpLoad,
+      pullUpLoad: this.pullUpLoad,
     });
 
     //监听滚动位置
@@ -41,15 +41,23 @@ export default {
       this.$emit("scroll", position);
       // console.log(position);
     });
-    //监听上拉事件
-    // this.scroll.on("pullingUp", () => {
-    //   console.log("加载");
-    // });
+    // 监听上拉事件
+    if (this.pullUpLoad) {
+      this.scroll.on("pullingUp", () => {
+        this.$emit("pullingUp");
+      });
+    }
     // console.log(this.scroll.plugins.zoom);
   },
   methods: {
     scrollTo(x, y, time = 300) {
       this.scroll.scrollTo(x, y, time);
+    },
+    finishPullUp() {
+      this.scroll && this.scroll.finishPullUp();
+    },
+    getScrollY() {
+      return this.scroll ? this.scroll.y : 0;
     },
   },
 };
