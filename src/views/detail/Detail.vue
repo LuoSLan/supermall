@@ -10,7 +10,6 @@ import detailNavBar from "./childComps/detailNavBar.vue";
 export default {
   name: "Detail",
   components: { detailNavBar },
-
   data() {
     return {
       iid: null,
