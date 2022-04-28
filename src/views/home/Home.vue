@@ -3,15 +3,24 @@
     <nav-bar class="home-nav">
       <template v-slot:center>购物街</template>
     </nav-bar>
-    <home-swiper :banners="banners" />
-    <recommend-view :recommends="recommends" />
-    <feature-view></feature-view>
-    <tab-control
-      :titles="['流行', '新款', '精选']"
-      class="tab-control"
-      @tabClick="tabClick"
-    />
-    <goods-list :goods="goods[currentType].list" />
+    <scroll
+      class="content"
+      ref="scroll"
+      :probe-type="3"
+      :pulling-up-load="true"
+      @scroll="contentScroll"
+    >
+      <home-swiper :banners="banners" />
+      <recommend-view :recommends="recommends" />
+      <feature-view></feature-view>
+      <tab-control
+        :titles="['流行', '新款', '精选']"
+        class="tab-control"
+        @tabClick="tabClick"
+      />
+      <goods-list :goods="goods[currentType].list" />
+    </scroll>
+    <back-top @click="backClick" v-show="isShowBackTop" />
   </div>
 </template>
 
@@ -19,6 +28,8 @@
 import NavBar from "components/common/navbar/NavBar.vue";
 import TabControl from "components/content/tabControl/TabControl.vue";
 import GoodsList from "components/content/goods/GoodsList.vue";
+import Scroll from "components/common/scroll/Scroll.vue";
+import BackTop from "components/content/backTop/BackTop.vue";
 
 import HomeSwiper from "./childComps/HomeSwiper.vue";
 import RecommendView from "./childComps/RecommendView.vue";
@@ -32,11 +43,12 @@ export default {
     NavBar,
     TabControl,
     GoodsList,
+    Scroll,
+    BackTop,
+
     HomeSwiper,
     RecommendView,
     FeatureView,
-    GoodsList,
-    TabControl,
   },
   data() {
     return {
@@ -48,6 +60,7 @@ export default {
         sell: { page: 0, list: [] },
       },
       currentType: "pop",
+      isShowBackTop: false,
     };
   },
   created() {
@@ -74,6 +87,13 @@ export default {
           this.currentType = "sell";
       }
     },
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0);
+      // console.log(this.$refs.scroll.message);
+    },
+    contentScroll(position) {
+      this.isShowBackTop = position.y < -1000;
+    },
 
     /*
      *网络请求相关方法
@@ -96,7 +116,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .home-nav {
   background-color: var(--color-tint);
   color: #fff;
@@ -112,5 +132,9 @@ export default {
 }
 li {
   height: 200px;
+}
+.content {
+  height: calc(100vh - 93px);
+  /* z-index: -1; */
 }
 </style>
