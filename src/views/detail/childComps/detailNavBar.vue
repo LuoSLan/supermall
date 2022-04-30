@@ -54,14 +54,14 @@ export default {
 .back-img {
   width: 26px;
   height: 26px;
-  margin-top: 9px;
+  vertical-align: middle;
 }
 .title {
   display: flex;
 }
 .title-item {
   flex: 1;
-  font-size: 12px;
+  font-size: 14px;
 }
 .active {
   color: var(--color-high-text);
