@@ -15,23 +15,27 @@ const Detail = () =>
 
 const routes = [{
     path: '',
-    redirect: '/home',
+    redirect: '/home'
   },
   {
     path: '/home',
-    component: Home
+    component: Home,
+    meta: { footShow: true },
   },
   {
     path: '/category',
-    component: Category
+    component: Category,
+    meta: { footShow: true },
   },
   {
     path: '/shopcart',
-    component: Shopcart
+    component: Shopcart,
+    meta: { footShow: true },
   },
   {
     path: '/profile',
-    component: Profile
+    component: Profile,
+    meta: { footShow: true },
   },
   {
     path: '/detail/:iid',

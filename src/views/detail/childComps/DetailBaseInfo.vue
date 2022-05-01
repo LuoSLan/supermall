@@ -63,11 +63,12 @@ export default {
   font-size: 14px;
 }
 .discount {
-  padding: 3px;
+  padding: 4px;
   background-color: var(--color-high-text);
   color: #fff;
+  font-size: 14px;
   font-weight: 500;
-  border-radius: 10px;
+  border-radius: 9px;
 }
 
 .info-other {
