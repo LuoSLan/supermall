@@ -1,11 +1,25 @@
 <template>
   <div id="detail">
-    <detail-nav-bar class="detail-nav-bar"></detail-nav-bar>
-    <detail-swiper :topImages="topImages"></detail-swiper>
-    <detail-base-info :goods="goods"></detail-base-info>
-    <detail-shop-info :shop="shop"></detail-shop-info>
-    <detail-goods-info :detailInfo="detailInfo"></detail-goods-info>
-    <detail-param-info :param-info="paramInfo"></detail-param-info>
+    <detail-nav-bar
+      class="detail-nav-bar"
+      @itemClick="itemClick"
+    ></detail-nav-bar>
+    <scroll
+      class="detail-content"
+      ref="scroll"
+      :probe-type="3"
+      :pull-up-load="true"
+    >
+      <detail-swiper :topImages="topImages" ref="dswiper"></detail-swiper>
+      <!-- <detail-base-info :goods="goods"></detail-base-info> -->
+      <detail-shop-info :shop="shop"></detail-shop-info>
+      <detail-goods-info :detailInfo="detailInfo"></detail-goods-info>
+      <detail-param-info
+        :param-info="paramInfo"
+        ref="dparam"
+      ></detail-param-info>
+      <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
+    </scroll>
   </div>
 </template>
 
@@ -16,6 +30,9 @@ import DetailBaseInfo from "./childComps/DetailBaseInfo";
 import DetailShopInfo from "./childComps/DetailShopInfo";
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo.vue";
 import DetailParamInfo from "./childComps/DetailParamInfo.vue";
+import DetailCommentInfo from "./childComps/DetailCommentInfo.vue";
+
+import Scroll from "components/common/scroll/Scroll.vue";
 
 import { getDetail, Goods, Shop, GoodsParam } from "network/detail";
 
@@ -28,6 +45,8 @@ export default {
     DetailShopInfo,
     DetailGoodsInfo,
     DetailParamInfo,
+    DetailCommentInfo,
+    Scroll,
   },
   data() {
     return {
@@ -37,6 +56,7 @@ export default {
       shop: {},
       detailInfo: {},
       paramInfo: {},
+      commentInfo: {},
     };
   },
   created() {
@@ -68,11 +88,28 @@ export default {
         data.itemParams.info,
         data.itemParams.rule
       );
+
+      //6.获取评论信息
+      if (data.rate.cRate !== 0) {
+        this.commentInfo = data.rate.list[0];
+      }
     });
   },
   methods: {
     imageLoad() {
       this.$refs.scroll.refresh();
+    },
+    itemClick(index) {
+      switch (index) {
+        case 0:
+          this.$refs.scroll.scroll.scrollToElement(this.$refs.dswiper[0], {});
+          break;
+        case 1:
+          console.log(index);
+
+          this.$refs.scroll.scroll.scrollToElement(this.$refs.dparam[0]);
+          break;
+      }
     },
   },
 };
@@ -83,5 +120,8 @@ export default {
   position: sticky;
   top: 0;
   background-color: #fff;
+}
+.detail-content {
+  height: calc(100vh - 93px);
 }
 </style>
