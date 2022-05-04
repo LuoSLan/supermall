@@ -10,16 +10,19 @@
       :probe-type="3"
       :pull-up-load="true"
     >
-      <detail-swiper :topImages="topImages" ref="dswiper"></detail-swiper>
+      <detail-swiper :topImages="topImages" ref="dSwiper"></detail-swiper>
       <!-- <detail-base-info :goods="goods"></detail-base-info> -->
       <detail-shop-info :shop="shop"></detail-shop-info>
       <detail-goods-info :detailInfo="detailInfo"></detail-goods-info>
       <detail-param-info
         :param-info="paramInfo"
-        ref="dparam"
+        ref="dParam"
       ></detail-param-info>
       <detail-comment-info :comment-info="commentInfo"></detail-comment-info>
     </scroll>
+    <detail-bottom-bar @addCart="addToCart"></detail-bottom-bar>
+    <back-top @click="backClick" v-show="isShowBackTop" />
+    <toast :message="message" :show="show" />
   </div>
 </template>
 
@@ -31,8 +34,11 @@ import DetailShopInfo from "./childComps/DetailShopInfo";
 import DetailGoodsInfo from "./childComps/DetailGoodsInfo.vue";
 import DetailParamInfo from "./childComps/DetailParamInfo.vue";
 import DetailCommentInfo from "./childComps/DetailCommentInfo.vue";
+import DetailBottomBar from "./childComps/DetailBottomBar.vue";
 
 import Scroll from "components/common/scroll/Scroll.vue";
+import BackTop from "components/content/backTop/BackTop.vue";
+import Toast from "components/common/toast/Toast";
 
 import { getDetail, Goods, Shop, GoodsParam } from "network/detail";
 
@@ -46,7 +52,11 @@ export default {
     DetailGoodsInfo,
     DetailParamInfo,
     DetailCommentInfo,
+    DetailBottomBar,
+
     Scroll,
+    BackTop,
+    Toast,
   },
   data() {
     return {
@@ -57,6 +67,9 @@ export default {
       detailInfo: {},
       paramInfo: {},
       commentInfo: {},
+      isShowBackTop: false,
+      message: "",
+      show: false,
     };
   },
   created() {
@@ -100,16 +113,43 @@ export default {
       this.$refs.scroll.refresh();
     },
     itemClick(index) {
-      switch (index) {
-        case 0:
-          this.$refs.scroll.scroll.scrollToElement(this.$refs.dswiper[0], {});
-          break;
-        case 1:
-          console.log(index);
+      // switch (index) {
+      //   case 0:
+      //     this.$refs.scroll.scroll.scrollToElement(this.$refs.dSwiper[0], {});
+      //     break;
+      //   case 1:
+      //     console.log(index);
+      //     this.$refs.scroll.scroll.scrollToElement(this.$refs.dParam[0]);
+      //     break;
+      // }
+    },
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0);
+      // console.log(this.$refs.scroll.message);
+    },
+    contentScroll(position) {
+      this.isShowBackTop = position.y < -1000;
 
-          this.$refs.scroll.scroll.scrollToElement(this.$refs.dparam[0]);
-          break;
-      }
+      console.log(position.y);
+    },
+    addToCart() {
+      // 1.获取需要展示的信息
+      const product = {};
+      product.image = this.topImages[0];
+      product.title = this.goods.title;
+      product.desc = this.goods.desc;
+      product.price = this.goods.realPrice;
+      product.iid = this.iid;
+
+      // 2.将商品添加到购物车
+      this.$store.dispatch("addCart", product).then((res) => {
+        this.show = true;
+        this.message = res;
+        setTimeout(() => {
+          this.show = false;
+          this.message = "";
+        }, 1500);
+      });
     },
   },
 };

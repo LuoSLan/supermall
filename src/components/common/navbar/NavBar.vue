@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  // name: "NarBar",
+  name: "NarBar",
 };
 </script>
 

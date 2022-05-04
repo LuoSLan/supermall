@@ -60,6 +60,7 @@ export default {
   padding: 5px;
   color: #333;
   border-bottom: 5px solid #f2f5f8;
+  background-color: #fff;
 }
 .info-header {
   height: 50px;

@@ -80,7 +80,7 @@ export default {
   },
   deactivated() {
     this.saveY = this.$refs.scroll.getScrollY();
-    // console.log(this.sveY);
+    // console.log(this.saveY);
   },
   created() {
     this.getHomeMultidata();
